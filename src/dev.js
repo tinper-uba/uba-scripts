@@ -10,26 +10,35 @@ const app = express();
 const path = require('path');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
+const dev = (opt) => {
+  let compiler = webpack(require('./webpack.dev.config'));
+  compiler.apply(new OpenBrowserPlugin({
+    url: `http://localhost:${opt.port}`
+  }));
+  app.use(require("webpack-hot-middleware")(compiler));
+  app.use(middleware(compiler, {
+    logTime: true,
+    logLevel: "info",
+    stats: {
+      hash: false,
+      chunks: false,
+      children: false,
+      colors: true
+    }
+  }));
+  app.listen(opt.port, () => console.log(chalk.green.bold(`\nThe debug service has started the listener port: ${opt.port}\n`)))
+
+}
+
 module.exports = {
   start: function (opt) {
-    let compiler = webpack(require('./webpack.dev.config'));
-    compiler.apply(new OpenBrowserPlugin({ url: 'http://localhost:3000' }));
-    app.use(require("webpack-hot-middleware")(compiler));
-    app.use(middleware(compiler, {
-      logTime: true,
-      logLevel: "info",
-      stats: {
-        hash: false,
-        chunks: false,
-        children: false,
-        colors: true
-      }
-    }));
     getPort({
       port: 3000
     }).then(port => {
       console.clear();
-      app.listen(port, () => console.log(chalk.green.bold(`\nThe debug service has started the listener port: ${port}\n`)))
+      dev({
+        port
+      })
     });
   }
 }
