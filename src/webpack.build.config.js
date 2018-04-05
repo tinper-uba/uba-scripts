@@ -14,6 +14,9 @@ const base = require('./webpack.base.config');
 const config = {
   devtool: 'source-map',
   mode: 'production',
+  entry: {
+    app: ['./src/app.jsx']
+  },
   optimization: {
     minimizer: [
       new UglifyJsPlugin({

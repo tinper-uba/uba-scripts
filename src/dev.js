@@ -8,12 +8,13 @@ const getPort = require('get-port');
 const chalk = require('chalk');
 const app = express();
 const path = require('path');
-OpenBrowserPlugin = require('open-browser-webpack-plugin');
+const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 module.exports = {
   start: function (opt) {
     let compiler = webpack(require('./webpack.dev.config'));
     compiler.apply(new OpenBrowserPlugin({ url: 'http://localhost:3000' }));
+    app.use(require("webpack-hot-middleware")(compiler));
     app.use(middleware(compiler, {
       logTime: true,
       logLevel: "info",
