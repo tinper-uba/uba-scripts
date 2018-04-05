@@ -1,7 +1,6 @@
 /**
- * 内置webpack4配置
+ * @description 内置webpack4配置
  */
-
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -10,10 +9,21 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
+//提取package里的包
+function getVendors() {
+  let pkg = require(path.resolve('.','./package.json'));
+  let _vendors = [];
+  for (const key in pkg.dependencies) {
+    _vendors.push(key);
+  }
+  return _vendors;
+}
 const config = {
+  devtool: 'source-map',
   mode: 'production',
   entry: {
-    app: './app.js'
+    app: './src/app.jsx',
+    vendor: getVendors()
   },
   output: {
     path: path.resolve('.', 'dist'),
@@ -23,7 +33,7 @@ const config = {
     rules: [{
       test: /\.js[x]?$/,
       exclude: /(node_modules)/,
-      //include: path.resolve('src'),
+      include: path.resolve('src'),
       use: [{
         loader: require.resolve('babel-loader'),
         options: {
@@ -121,9 +131,21 @@ const config = {
       new OptimizeCSSAssetsPlugin({})
     ]
   },
+  resolve: {
+    extensions: [
+      ".jsx", ".js", ".less", ".css", ".json"
+    ],
+    alias: {
+      components: path.resolve('.', "src/components/"),
+      modules: path.resolve('.', "src/modules/"),
+      routes: path.resolve('.', "src/routes/"),
+      layout: path.resolve('.', "src/layout/"),
+      utils: path.resolve('.', "src/utils/")
+    }
+  },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: './src/index.html',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
