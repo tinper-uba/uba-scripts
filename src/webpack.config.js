@@ -49,6 +49,15 @@ const config = {
         loader: MiniCssExtractPlugin.loader
       }, {
         loader: require.resolve('css-loader')
+      }, {
+        loader: require.resolve('postcss-loader'),
+        options: {
+          ident: 'postcss',
+          plugins: (loader) => [
+            require('autoprefixer')(),
+            require('cssnano')()
+          ]
+        }
       }]
     }, {
       test: /\.less$/,
@@ -57,6 +66,15 @@ const config = {
         },
         {
           loader: require.resolve('css-loader')
+        }, {
+          loader: require.resolve('postcss-loader'),
+          options: {
+            ident: 'postcss',
+            plugins: (loader) => [
+              require('autoprefixer')(),
+              require('cssnano')()
+            ]
+          }
         },
         {
           loader: require.resolve('less-loader')
