@@ -23,7 +23,7 @@ const config = {
     rules: [{
       test: /\.js[x]?$/,
       exclude: /(node_modules)/,
-      //include: path.resolve("src"),
+      //include: path.resolve('src'),
       use: [{
         loader: require.resolve('babel-loader'),
         options: {
@@ -31,9 +31,9 @@ const config = {
           presets: [require.resolve('babel-preset-env'), require.resolve('babel-preset-react'), require.resolve('babel-preset-stage-2')],
           plugins: [
             [require.resolve('babel-plugin-transform-runtime'), {
-              "helpers": false,
-              "polyfill": true,
-              "regenerator": true
+              'helpers': false,
+              'polyfill': true,
+              'regenerator': true
             }]
           ]
         }
@@ -54,7 +54,11 @@ const config = {
         options: {
           ident: 'postcss',
           plugins: (loader) => [
-            require('autoprefixer')(),
+            require('postcss-flexbugs-fixes'),
+            require('autoprefixer')({
+              flexbox: 'no-2009',
+              browsers: 'last 5 version'
+            }),
             require('cssnano')()
           ]
         }
@@ -71,7 +75,11 @@ const config = {
           options: {
             ident: 'postcss',
             plugins: (loader) => [
-              require('autoprefixer')(),
+              require('postcss-flexbugs-fixes'),
+              require('autoprefixer')({
+                flexbox: 'no-2009',
+                browsers: 'last 5 version'
+              }),
               require('cssnano')()
             ]
           }
@@ -86,15 +94,19 @@ const config = {
         loader: require.resolve('url-loader'),
         options: {
           limit: 8192,
-          name: 'images/[name].[hash:8].[ext]'
+          name: '[name].[hash:8].[ext]',
+          outputPath: 'images'
         }
+      }, {
+        loader: require.resolve('image-webpack-loader')
       }]
     }, {
       test: /\.(eot|ttf|woff|woff2)(\?.+)?$/,
       use: [{
         loader: require.resolve('file-loader'),
         options: {
-          name: "fonts/[name].[hash:8].[ext]"
+          name: '[name].[hash:8].[ext]',
+          outputPath: 'fonts'
         }
       }]
     }]
@@ -133,6 +145,33 @@ const config = {
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash:8].css'
+    }),
+    new webpack.ProgressPlugin(),
+    new webpack.optimize.RuntimeChunkPlugin({
+      name: 'manifest'
+    }),
+    new webpack.optimize.SplitChunksPlugin({
+      cacheGroups: {
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+        //打包重复出现的代码
+        vendor: {
+          chunks: 'initial',
+          minChunks: 2,
+          maxInitialRequests: 5, // The default limit is too small to showcase the effect
+          minSize: 0, // This is example is too small to create commons chunks
+          name: 'vendor'
+        },
+        //打包第三方类库
+        commons: {
+          name: 'vendor',
+          chunks: 'initial',
+          minChunks: Infinity
+        }
+      }
     })
   ]
 };

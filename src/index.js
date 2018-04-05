@@ -7,9 +7,11 @@ const path = require('path');
 const webpackConfig = require('./webpack.config');
 
 
+
 module.exports = {
   start: function (opt) {
-    webpack(webpackConfig, function (err, stats) {
+    let compiler = webpack(webpackConfig);
+    compiler.run((err, stats) => {
       if (!err) {
         console.log('\n' + stats.toString({
           hash: false,
