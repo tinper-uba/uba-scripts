@@ -1,27 +1,29 @@
 /**
- * @description 构建资源
+ * @description 入口
  */
 
-const webpack = require('webpack');
-const path = require('path');
-const webpackConfig = require('./webpack.config');
-
-
+const chalk = require('chalk');
+const log = console.log;
 
 module.exports = {
   start: function (opt) {
-    let compiler = webpack(webpackConfig);
-    compiler.run((err, stats) => {
-      if (!err) {
-        console.log('\n' + stats.toString({
-          hash: false,
-          chunks: false,
-          children: false,
-          colors: true
-        }));
-      } else {
-        console.log(chalk.red(err));
-      }
-    });
+    let cmd = opt._[0];
+
+    if (opt._.length == 0) {
+      log(chalk.green('Help:'));
+      log(chalk.green('development:   ', chalk.green.bold('uba-scripts dev')));
+      log(chalk.green('production:    ', chalk.green.bold('uba-scripts build')));
+      process.exit(0);
+    }
+
+    switch (cmd) {
+      case 'dev':
+      case 'build':
+        require(`./${cmd}`).start();
+      break;
+      default:
+      log(chalk.red('command not found'));
+        break;
+    }
   }
 }

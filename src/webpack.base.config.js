@@ -1,26 +1,21 @@
 /**
- * @description 内置webpack4配置
+ * @description 默认webpack4配置
  */
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 //提取package里的包
 function getVendors() {
-  let pkg = require(path.resolve('.','./package.json'));
+  let pkg = require(path.resolve('.', './package.json'));
   let _vendors = [];
   for (const key in pkg.dependencies) {
     _vendors.push(key);
   }
   return _vendors;
 }
+
 const config = {
-  devtool: 'source-map',
-  mode: 'production',
   entry: {
     app: './src/app.jsx',
     vendor: getVendors()
@@ -58,7 +53,10 @@ const config = {
       use: [{
         loader: MiniCssExtractPlugin.loader
       }, {
-        loader: require.resolve('css-loader')
+        loader: require.resolve('css-loader'),
+        options: {
+          url: false
+        }
       }, {
         loader: require.resolve('postcss-loader'),
         options: {
@@ -79,7 +77,11 @@ const config = {
           loader: MiniCssExtractPlugin.loader
         },
         {
-          loader: require.resolve('css-loader')
+          loader: require.resolve('css-loader'),
+          options: {
+            url: true,
+            root: path.resolve('.')
+          }
         }, {
           loader: require.resolve('postcss-loader'),
           options: {
@@ -121,16 +123,6 @@ const config = {
       }]
     }]
   },
-  optimization: {
-    minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: true // set to true if you want JS source maps
-      }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
-  },
   resolve: {
     extensions: [
       ".jsx", ".js", ".less", ".css", ".json"
@@ -144,26 +136,8 @@ const config = {
     }
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeRedundantAttributes: true,
-        useShortDoctype: true,
-        removeEmptyAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        keepClosingSlash: true,
-        minifyJS: true,
-        minifyCSS: true,
-        minifyURLs: true
-      }
-    }),
     new webpack.BannerPlugin({
       banner: 'build:uba hash:[hash], chunkhash:[chunkhash], name:[name], filebase:[filebase], query:[query], file:[file]'
-    }),
-    new CleanWebpackPlugin(['dist'], {
-      root: path.resolve('.')
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash:8].css'
