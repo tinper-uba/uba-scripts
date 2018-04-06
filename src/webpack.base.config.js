@@ -96,7 +96,8 @@ const config = {
       }, {
         loader: require.resolve('css-loader'),
         options: {
-          url: false
+          url: true,
+          root: path.resolve('.')
         }
       }, {
         loader: require.resolve('postcss-loader'),
@@ -115,31 +116,31 @@ const config = {
     }, {
       test: /\.less$/,
       use: [{
-          loader: MiniCssExtractPlugin.loader
-        },
-        {
-          loader: require.resolve('css-loader'),
-          options: {
-            url: true,
-            root: path.resolve('.')
-          }
-        }, {
-          loader: require.resolve('postcss-loader'),
-          options: {
-            ident: 'postcss',
-            plugins: (loader) => [
-              require('postcss-flexbugs-fixes'),
-              require('autoprefixer')({
-                flexbox: 'no-2009',
-                browsers: 'last 5 version'
-              }),
-              require('cssnano')()
-            ]
-          }
-        },
-        {
-          loader: require.resolve('less-loader')
+        loader: MiniCssExtractPlugin.loader
+      },
+      {
+        loader: require.resolve('css-loader'),
+        options: {
+          url: true,
+          root: path.resolve('.')
         }
+      }, {
+        loader: require.resolve('postcss-loader'),
+        options: {
+          ident: 'postcss',
+          plugins: (loader) => [
+            require('postcss-flexbugs-fixes'),
+            require('autoprefixer')({
+              flexbox: 'no-2009',
+              browsers: 'last 5 version'
+            }),
+            require('cssnano')()
+          ]
+        }
+      },
+      {
+        loader: require.resolve('less-loader')
+      }
       ]
     }, {
       test: /\.(png|jpg|jpeg|gif|svg|svgz)(\?.+)?$/,
